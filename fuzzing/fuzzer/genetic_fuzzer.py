@@ -5,7 +5,7 @@ from detector.reentrancy import *
 import random
 
 def genetic_fuzzer(w3, abi, contract_instance, sloads, calls, source_map, generations=1, population_size=10):
-    # Gera população inicial - agora extraindo corretamente as funções
+    # Gera população inicial 
     raw_population = [generate_random_inputs(abi) for _ in range(population_size)]
     population = []
     for individual in raw_population:
@@ -14,7 +14,7 @@ def genetic_fuzzer(w3, abi, contract_instance, sloads, calls, source_map, genera
         population.append(combined_functions)
     
     coverage_map = {}
-    total_pcs = len(source_map.instr_positions)  # all contract pcs
+    total_pcs = len(source_map.instr_positions)  
 
     for generation in range(generations):
         print(f"\nGeneration {generation}...")
@@ -25,7 +25,7 @@ def genetic_fuzzer(w3, abi, contract_instance, sloads, calls, source_map, genera
                 # Trata inputs de forma unificada
                 if 'inputs' in func and len(func['inputs']) > 0:
                     if isinstance(func['inputs'], list) and all(isinstance(i, dict) for i in func['inputs']):
-                        # Formato novo com inputs estruturados
+                        
                         func_inputs = [inp['mutated_value'] if 'mutated_value' in inp else inp['value'] 
                                for inp in func['inputs']]
                     else:

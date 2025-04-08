@@ -19,7 +19,7 @@ def generate_random_inputs(abi: List[Dict]) -> Dict[str, List[Dict]]:
         }
 
         if not item.get('inputs'):
-            # Para funções sem inputs, geramos 5 mutações diferentes
+            # Gerar 5 valores aleatorios para funcoes sem inptus
             mutations = [
                 {'type': 'raw_bytes', 'value': mutate_raw_input(), 'mutation_type': 'flip_bits'},
                 {'type': 'raw_bytes', 'value': mutate_raw_input(), 'mutation_type': 'interesting_values'},
@@ -30,7 +30,7 @@ def generate_random_inputs(abi: List[Dict]) -> Dict[str, List[Dict]]:
             function_data['inputs'] = mutations
             functions_without_inputs.append(function_data)
         else:
-            # Para funções com inputs, geramos 3 mutações por parâmetro
+            # Para funções com inputs 3 parametros
             param_mutations = []
             for input_param in item['inputs']:
                 param_type = input_param['type']
@@ -264,7 +264,7 @@ def mutate_input():
         return delete_bytes()
     
 def save_mutations(mutations: Dict[str, Any]):
-    """Salva os resultados em ../output/mutations.json"""
+    """Salva os resultados em ./output/mutations.json"""
     output_path = os.path.join('..', 'output', 'mutations.json')
     with open(output_path, 'w') as f:
         json.dump(mutations, f, indent=2, ensure_ascii=False)
