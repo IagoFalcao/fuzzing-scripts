@@ -61,7 +61,7 @@ def generate_random_inputs(abi: List[Dict]) -> Dict[str, List[Dict]]:
                 ]
                 param_mutations.append(mutations)
             
-            # Combinamos as mutações de todos os parâmetros
+            # 
             for i in range(3):  # Para cada conjunto de mutações
                 combined_inputs = []
                 for param in param_mutations:
@@ -177,8 +177,7 @@ def apply_bytes_mutation(b: bytes) -> bytes:
         pos = random.randint(0, len(mutated)-1)
         mutated[pos] = (mutated[pos] + random.randint(-10, 10)) % 256
     return bytes(mutated)
-
-# (As funções de mutação originais permanecem as mesmas)
+#AFL mutations
 def generate_random_buffer():
     size = random.randint(1, 256)
     return bytearray(random.randint(0, 255) for _ in range(size))
