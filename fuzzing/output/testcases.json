@@ -1,0 +1,20 @@
+[
+    {
+        "stateMutability": "payable",
+        "name": "deposit",
+        "inputs": {},
+        "mutated": "292e72383069972cdc148c814d6c368a033c11"
+    },
+    {
+        "stateMutability": "view",
+        "name": "getBalance",
+        "inputs": {},
+        "mutated": "398f78a0031388c48bcabf7164d6d855d74f9a532d06b2df294500e4e84056d1483e0be9e6c79f15afcc4d0f12f41e2406bc07d76d8d848a833bf520e4fd8fea8e9022e6db553e81a4dfc970d76e01350c01ab512683fbd597ac31a6e8596ac8eac1286d2eff22b290"
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "withdraw",
+        "inputs": {},
+        "mutated": "d0a971d89940a1b18b916ac6af6b5ef6070473caf1859b30fb273628b84346d5691342839b78058922aa39d1bdf6ca695989b5ceff2cbae67e0f28f59e02e2198b41909e404c5c580743a0cbc117d2a24430ce7003bf77d9b64141638133925224d9bd874b055efc71b2ef111135f28cce7187f718bae7cce29084f45749c79145d7ddcb49b36cafa348d7827afd4750d7"
+    }
+]

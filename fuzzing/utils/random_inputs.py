@@ -83,7 +83,7 @@ def mutate_input(buffer):
     elif mutation == 6:
         return delete_bytes(buffer)
 
-# transforma     os inputs para bytearray
+# parse inputs to bytearray
 def serialize_inputs(inputs):
     result = bytearray()
     for value in inputs.values():
@@ -137,7 +137,7 @@ def generate_random_inputs(abi):
                 'inputs': function_inputs,
                 'mutated': mutated_buffer.hex()
             })
-
+    save_testcases(inputs)
     return inputs
 
 # Salva em JSON

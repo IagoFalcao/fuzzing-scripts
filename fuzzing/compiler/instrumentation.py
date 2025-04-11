@@ -2,6 +2,7 @@ import subprocess
 import json
 import os
 import solcx
+
 from compiler import compile_smartcontract
 
 # Function to compile the contract and return his AST
