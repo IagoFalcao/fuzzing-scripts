@@ -5,14 +5,18 @@ from web3 import Web3
 from eth_account import Account
 from eth_tester import EthereumTesterProvider
 from web3.providers.eth_tester import EthereumTesterProvider
+from copy import deepcopy
+from utils.random_inputs import mutate_input
+from collections import defaultdict
+from fuzzer import simulate_transaction
 #Fun to calculate the 'selector' of a function (the first 4 bytes of keccak256) 
 # #to trigger wich function was called
 
 def keccak_selector(signature):#signatrure eg transfer(address,uint256)
     return hashlib.new('sha3_256',signature.encode()).hexdigest()[:8]
 
-#Fun that maps wich functions acess storage slots
-
+#Func that maps wich functions acess storage slots
+#use later for reentrancy---------------------------
 def map_function_state_accesses(bytecode,abi):
     function_map = {}
     bytecode = bytecode.lower().replace("0x","")#no prefixes in bytecode
@@ -56,7 +60,12 @@ def map_function_state_accesses(bytecode,abi):
     return function_map
 
 #Func to detect def-use dependencies
-
+"""
+In Solidity, Def-Use (Definition-Use) dependencies help analyze how 
+variables and state changes propagate through a smart contract. 
+Since Solidity contracts handle financial transactions and immutable code, 
+understanding these dependencies is crucial for preventing reentrancy
+"""
 def infer_data_flow_dependencies(function_access_map):
     dependencies = {}
 
@@ -146,3 +155,125 @@ def generate_ordered_sequence(dependencies):
         dfs(fn)
 
     return ordered[::-1]  # reverse para garantir ordem de execução correta
+
+#exchange transactions order
+def mutate_transaction_sequence(sequence):
+    #Modify the transaction sequences, including adding or removing
+    mutated_sequence = deepcopy(sequence)
+
+    mutation_type = random.choice(["permutation","insertion","deletion"])
+
+    if mutation_type == "permutation"and len(mutated_sequence) > 1:
+        #random exchange between sequence's transaction
+        index1,index2 = random.sample(range(len(mutated_sequence)),2)
+        mutated_sequence[index1],mutated_sequence[index2] = mutated_sequence[index2],mutated_sequence[index1]
+
+    elif mutation_type == "insertion":
+        #inserts a random fake transaction in the sequence
+
+        random_function = random.choice(sequence)
+        mutated_sequence.insert(random.randint(0,len(mutated_sequence)),random)
+    
+    elif mutation_type == "deletion":
+        #deletes a random transaction
+        mutated_sequence.pop(random.randint(0,len(mutated_sequence) - 1))
+    
+    return mutated_sequence
+
+#func that mtates transaction's sender address
+def mutate_sender(sender,auth_addresses):
+    if len(auth_addresses) > 1:#select a authentic address to replace the current sender
+        return random.choice([addr for addr in auth_addresses if addr != sender])
+    return sender
+
+#Func to mutate seeds(function, inputs, sender)
+def mutate_seed(seed,auth_addresses):
+
+    #sender mutation
+    seed["sender"] = mutate_sender(seed["sender"],auth_addresses)
+
+    #input mutation
+    mutated_inputs = {}
+    for param,value in seed["inputs"].items():
+        mutated_inputs[param] = mutate_input(value)
+    seed["inputs"] = mutated_inputs
+
+    #transaction mutation
+    mutated_sequence = mutate_transaction_sequence([seed["function"]])
+
+    return mutated_sequence,seed
+
+
+# Função para verificar se um def-use chain é novo com base no histórico
+def is_new_def_use(function_name, state_reads, state_writes, observed_def_use):
+    new_paths = []
+
+    for write in state_writes:
+        for read_fn, read_slots in observed_def_use.items():
+            if write in read_slots and read_fn != function_name:
+                new_paths.append((function_name, read_fn, write))
+    
+    return new_paths
+def symbolic_execution_feedback(w3, contract, function_name, inputs, sender, function_access_map, observed_def_use):
+    feedback = defaultdict(list)
+
+    txn_receipt = simulate_transaction(w3, contract, function_name, inputs, sender)
+
+    if txn_receipt is None:
+        print(f"Failed to execute function {function_name}")
+        return feedback
+
+    # memories access
+    access = function_access_map.get(function_name, {})
+    state_reads = access.get("reads", [])
+    state_writes = access.get("writes", [])
+
+    # Update feedback if new def_use is detected
+    new_def_uses = is_new_def_use(function_name, state_reads, state_writes, observed_def_use)
+
+    for def_fn, use_fn, slot in new_def_uses:
+        feedback["def_use_chains"].append({
+            "defined_in": def_fn,
+            "used_in": use_fn,
+            "slot": slot
+        })
+
+    # Atualiza o mapa de slots lidos por função
+    if function_name not in observed_def_use:
+        observed_def_use[function_name] = set()
+    observed_def_use[function_name].update(state_reads)
+
+    return feedback
+
+def guided_mutation_based_on_feedback(sequence,feedback,def_use_graph):
+    mutated_sequence = deepcopy(sequence)
+
+
+    #More priority to new def-use functions
+    for def_use in feedback.get("def_use_chains",[]):
+        use_fn = def_use["used_in"]
+        if use_fn not in [tx["function"] for tx in sequence]:
+            #adds the new func
+            mutated_sequence.append({"function": use_fn, "inputs": {}, "sender": None, "value": 0})
+    ordered_sequence = []
+    visited = set()
+
+    def dfs(fn):
+        if fn in visited:
+            return
+        visited.add(fn)
+        for dep in def_use_graph.get(fn,[]):
+            dfs(dep)
+        ordered_sequence.append(fn)
+
+    for tx in mutated_sequence:
+        dfs(tx["function"])
+
+    #Rebuilds sequence in order
+    final_sequence = []
+    for fn in ordered_sequence:
+        for tx in mutated_sequence:
+            if tx["function"] == fn:
+                final_sequence.append(tx)
+                break
+    return final_sequence
