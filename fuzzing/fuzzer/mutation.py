@@ -3,7 +3,6 @@ import hashlib
 import random
 from web3 import Web3
 from eth_account import Account
-from eth_tester import EthereumTesterProvider
 from web3.providers.eth_tester import EthereumTesterProvider
 from copy import deepcopy
 from utils.random_inputs import mutate_input
@@ -125,14 +124,19 @@ def generate_random_input(param_type):
 
 def generate_seed(contract,function, auth_address):
     inputs = {}
-    fn_abi = contract.get_fuction_by_name(function).abi
+    fn_abi = contract.get_function_by_name(function).abi
 
-    for param in fn_abi['inputs']:
-        inputs[param['name']] = generate_random_input(param[type])
 
-    #sender random choice
+    #Have inputs!!!
+    if fn_abi["inputs"]:
+
+        for param in fn_abi['inputs']:
+            inputs[param['name']] = generate_random_input(param[type])
+    else:
+        inputs = {}
+
+    #sender random choice and a random ether value
     sender = random.choice(auth_address) if auth_address else contract.web3.eth.accounts[0]
-
     value = random.randint(1, 5) * 10**15 if random.random() < 0.3 else 0
 
     return {"function": function, "inputs": inputs, "sender": sender, "value": value}
@@ -157,6 +161,7 @@ def generate_ordered_sequence(dependencies):
     return ordered[::-1]  # reverse para garantir ordem de execução correta
 
 #exchange transactions order
+#Static way!!!!
 def mutate_transaction_sequence(sequence):
     #Modify the transaction sequences, including adding or removing
     mutated_sequence = deepcopy(sequence)
@@ -172,13 +177,33 @@ def mutate_transaction_sequence(sequence):
         #inserts a random fake transaction in the sequence
 
         random_function = random.choice(sequence)
-        mutated_sequence.insert(random.randint(0,len(mutated_sequence)),random)
+        mutated_sequence.insert(random.randint(0,len(mutated_sequence)),random_function)
     
     elif mutation_type == "deletion":
         #deletes a random transaction
         mutated_sequence.pop(random.randint(0,len(mutated_sequence) - 1))
     
     return mutated_sequence
+
+def mutate_input_value(input_value):
+    """Modifica aleatoriamente o valor do input com mutações como flip de bits ou substituição por valores especiais."""
+    # Exemplo de flip de bits
+    if isinstance(input_value, int):
+        bit_length = input_value.bit_length()
+        flip_bit = 1 << random.randint(0, bit_length - 1)  # Gera bit aleatório para flip
+        return input_value ^ flip_bit  # Flip no bit aleatório
+
+    # Substituição por valor especial
+    special_values = [0x00, 0xFF, 0xDEADBEEF, 0xBADC0DE]
+    if isinstance(input_value, (int, bytes)):
+        return random.choice(special_values)  # Retorna um valor especial aleatório
+    
+    # Caso de bytearray
+    if isinstance(input_value, bytes):
+        new_size = random.randint(1, len(input_value) + 5)  # Altera tamanho do byte array
+        return bytes(random.getrandbits(8) for _ in range(new_size))  # Novo byte array
+
+    return input_value  #non modified
 
 #func that mtates transaction's sender address
 def mutate_sender(sender,auth_addresses):
@@ -193,12 +218,13 @@ def mutate_seed(seed,auth_addresses):
     seed["sender"] = mutate_sender(seed["sender"],auth_addresses)
 
     #input mutation
-    mutated_inputs = {}
-    for param,value in seed["inputs"].items():
-        mutated_inputs[param] = mutate_input(value)
-    seed["inputs"] = mutated_inputs
+    if seed["inputs"]:
+        mutated_inputs = {}
+        for param,value in seed["inputs"].items():
+            mutated_inputs[param] = mutate_input_value(value)
+        seed["inputs"] = mutated_inputs
 
-    #transaction mutation
+    #transaction sequence mutation
     mutated_sequence = mutate_transaction_sequence([seed["function"]])
 
     return mutated_sequence,seed
@@ -222,13 +248,12 @@ def symbolic_execution_feedback(w3, contract, function_name, inputs, sender, fun
     if txn_receipt is None:
         print(f"Failed to execute function {function_name}")
         return feedback
-
-    # memories access
+    #memoru access
     access = function_access_map.get(function_name, {})
     state_reads = access.get("reads", [])
     state_writes = access.get("writes", [])
 
-    # Update feedback if new def_use is detected
+    #functions with new dependencies
     new_def_uses = is_new_def_use(function_name, state_reads, state_writes, observed_def_use)
 
     for def_fn, use_fn, slot in new_def_uses:
@@ -238,7 +263,6 @@ def symbolic_execution_feedback(w3, contract, function_name, inputs, sender, fun
             "slot": slot
         })
 
-    # Atualiza o mapa de slots lidos por função
     if function_name not in observed_def_use:
         observed_def_use[function_name] = set()
     observed_def_use[function_name].update(state_reads)
@@ -250,10 +274,9 @@ def guided_mutation_based_on_feedback(sequence,feedback,def_use_graph):
 
 
     #More priority to new def-use functions
-    for def_use in feedback.get("def_use_chains",[]):
+    for def_use in feedback.get("def_use_chains", []):
         use_fn = def_use["used_in"]
         if use_fn not in [tx["function"] for tx in sequence]:
-            #adds the new func
             mutated_sequence.append({"function": use_fn, "inputs": {}, "sender": None, "value": 0})
     ordered_sequence = []
     visited = set()
@@ -262,7 +285,7 @@ def guided_mutation_based_on_feedback(sequence,feedback,def_use_graph):
         if fn in visited:
             return
         visited.add(fn)
-        for dep in def_use_graph.get(fn,[]):
+        for dep in def_use_graph.get(fn, []):
             dfs(dep)
         ordered_sequence.append(fn)
 
@@ -277,3 +300,25 @@ def guided_mutation_based_on_feedback(sequence,feedback,def_use_graph):
                 final_sequence.append(tx)
                 break
     return final_sequence
+
+
+
+
+#    # Mutação de Funções sem Parâmetros
+#     print("\n[*] Funções sem parâmetros detectadas para mutação:")
+#     for func in abi:
+#         if func.get("type") == "function" and func.get("stateMutability") != "view" and not func.get("inputs"):
+#             print(f"\nFunção sem parâmetros: {func['name']}")
+
+#             # Simular a transação sem entradas
+#             print("\n[*] Simulando transação com valores variados...")
+            
+#             # Testar com diferentes valores de Ether (ou gas, etc)
+#             for value in [Web3.to_wei(0.1, 'ether'), Web3.to_wei(0.5, 'ether'), Web3.to_wei(1, 'ether')]:
+#                 print(f"  ↳ Testando valor: {Web3.from_wei(value, 'ether')} Ether")
+
+#                 tx_receipt = simulate_transaction(w3=w3_conn, contract=ether_store_contract, function_name=func['name'], value=value)
+#                 if tx_receipt:
+#                     print(f"  ↳ Transação simulada com sucesso: {tx_receipt}")
+#                 else:
+#                     print("  ↳ Falha na simulação da transação.")
