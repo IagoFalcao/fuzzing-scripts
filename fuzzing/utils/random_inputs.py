@@ -88,34 +88,67 @@ def mutate_input(buffer):
     
 
 
-
 def generate_random_inputs(abi):
     inputs = []
-    
+
     for item in abi:
-        if item['type'] == 'function' and item['name'] != 'balances': # Only for EtherStore!
+        if item['type'] == 'function' and item['name'] != 'balances':  # Only for EtherStore!
             function_inputs = dict()
             for input_param in item.get('inputs', []):
                 param_type = input_param['type']
+                original_value = None
                 if param_type == 'uint256':
-                    value = random.randint(0, 2**256 - 1)
+                    original_value = random.randint(0, 2**256 - 1)
+                    serialized = original_value.to_bytes(32, byteorder='big')
                 elif param_type == 'address':
-                    value = '0x' + ''.join(random.choices('0123456789abcdef', k=40))
+                    original_value = '0x' + ''.join(random.choices('0123456789abcdef', k=40))
+                    serialized = bytes.fromhex(original_value[2:])
                 elif param_type == 'string':
-                    value = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', k=random.randint(5, 15)))
+                    original_value = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', k=random.randint(5, 15)))
+                    serialized = original_value.encode('utf-8')
                 elif param_type == 'bool':
-                    value = random.choice([True, False])
+                    original_value = random.choice([True, False])
+                    serialized = b'\x01' if original_value else b'\x00'
                 elif param_type.startswith('bytes'):
                     size = int(param_type.replace('bytes', '')) if len(param_type) > 5 else random.randint(1, 32)
-                    value = '0x' + ''.join(random.choices('0123456789abcdef', k=size*2))
+                    original_value = '0x' + ''.join(random.choices('0123456789abcdef', k=size * 2))
+                    serialized = bytes.fromhex(original_value[2:])
                 else:
-                    value = None # Non-supported types can be ignored or treated as needed
-                if value is not None:
-                    function_inputs[input_param['name']] = value
+                    continue  # tipo não suportado
+
+                
+                mutated = mutate_input(bytearray(serialized))
+
+                # Deserialize
+                try:
+                    if param_type == 'uint256':
+                        mutated_value = int.from_bytes(mutated[:32], byteorder='big')
+                    elif param_type == 'address':
+                        mutated_value = '0x' + mutated[:20].hex().ljust(40, '0')
+                    elif param_type == 'string':
+                        mutated_value = mutated.decode('utf-8', errors='ignore')
+                    elif param_type == 'bool':
+                        mutated_value = bool(mutated[0] % 2)
+                    elif param_type.startswith('bytes'):
+                        mutated_value = '0x' + mutated.hex()
+                    else:
+                        mutated_value = original_value
+                except:
+                    mutated_value = original_value  # fallback 
+                function_inputs[input_param['name']] = mutated_value
+
             inputs.append({
                 'stateMutability': item["stateMutability"],
                 'name': item['name'],
                 'inputs': function_inputs
             })
+   
+
+    # Salva em JSON
+    output_file = '/home/iaguito/fuzzing-scripts/fuzzing/output/mutated_inputs.json'
+    with open(output_file, 'w') as f:
+        json.dump(inputs, f, indent=4)
 
     return inputs
+
+

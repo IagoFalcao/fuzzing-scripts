@@ -1,0 +1,73 @@
+[
+    {
+        "stateMutability": "nonpayable",
+        "name": "complexFunction",
+        "inputs": {
+            "_num": 79778093108867758083440762283671688761316595677506703222753200520047308169096,
+            "_txt": "\u0000\u0000\u0000\u0000JfHEHd",
+            "_addr": "0x98c33eecb97f27b6259fb436c6201f84a0dba5e3",
+            "_boolVal": true,
+            "_byteData": "0x067a7a1dc61ed8e23f0b236fbac08d89796396c93db2e3236fbac08d89796396"
+        }
+    },
+    {
+        "stateMutability": "view",
+        "name": "data",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "flag",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "number",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setData",
+        "inputs": {
+            "_data": "0xe21a5eeb3e30706dddd39530bdb3e21a5eeb3e"
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setFlag",
+        "inputs": {
+            "_flag": true
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setNumber",
+        "inputs": {
+            "_number": 63776117971536156706604015331824766693151443889745393381245354321639054364203
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setText",
+        "inputs": {
+            "_text": "IGoAXdzSa"
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setUser",
+        "inputs": {
+            "_user": "0x05cdd10490d7a93695e5ff867eb55099cf6a77fc"
+        }
+    },
+    {
+        "stateMutability": "view",
+        "name": "text",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "user",
+        "inputs": {}
+    }
+]

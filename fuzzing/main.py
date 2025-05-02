@@ -16,7 +16,8 @@ import json
 
 if __name__ == "__main__":
     blockhain_url = "http://127.0.0.1:8545"
-    contract_filename = "contracts/test_contract1.sol"
+    contract_filename = "/home/iaguito/fuzzing-scripts/fuzzing/contracts/FuzzTestContract.sol"
+    
     contract_name = "FuzzTestContract"
     solc_version = "0.8.24"
 
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     deployed_bytecode = contract_interface['evm']['deployedBytecode']['object']
 
     #Sve abi for checking
-    abi_output_filename = 'output/abi.json'
+    abi_output_filename = '/home/iaguito/fuzzing-scripts/fuzzing/output/abi.json'
     with open(abi_output_filename, 'w') as f:
         json.dump(abi, f, indent=4)
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     #print("Depositing 1 Ether...")
     #tx_receipt = simulate_transaction(w3=w3_conn, contract=ether_store_contract, function_name='deposit', value=Web3.to_wei(1, 'ether'))
     source_map = SourceMap(f"{contract_filename}:{contract_name}", compiler_output)
-    save_source_map(compiler_output, contract_filename, contract_name, 'output/source_map.json')
+    save_source_map(compiler_output, contract_filename, contract_name, '/home/iaguito/fuzzing-scripts/fuzzing/output/source_map.json')
     genetic_fuzzer(w3_conn, abi, ether_store_contract, sloads, calls,source_map) # Init Fuzzing proccess
     
     #if tx_receipt is not None:
