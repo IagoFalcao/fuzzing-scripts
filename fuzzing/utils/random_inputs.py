@@ -82,29 +82,18 @@ def mutate_input(buffer):
         return insert_random_bytes(buffer)
     elif mutation == 6:
         return delete_bytes(buffer)
+    
 
-# parse inputs to bytearray
-def serialize_inputs(inputs):
-    result = bytearray()
-    for value in inputs.values():
-        if isinstance(value, int):
-            result += value.to_bytes(32, byteorder='big', signed=False)
-        elif isinstance(value, str) and value.startswith("0x"):
-            result += bytearray.fromhex(value[2:])
-        elif isinstance(value, str):
-            result += value.encode()
-        elif isinstance(value, bool):
-            result += b'\x01' if value else b'\x00'
-        else:
-            result += bytearray(str(value), 'utf-8')
-    return result
 
-# Gera inputs + mutações
+    
+
+
+
 def generate_random_inputs(abi):
     inputs = []
-
+    
     for item in abi:
-        if item['type'] == 'function' and item['name'] != 'balances': 
+        if item['type'] == 'function' and item['name'] != 'balances': # Only for EtherStore!
             function_inputs = dict()
             for input_param in item.get('inputs', []):
                 param_type = input_param['type']
@@ -120,30 +109,13 @@ def generate_random_inputs(abi):
                     size = int(param_type.replace('bytes', '')) if len(param_type) > 5 else random.randint(1, 32)
                     value = '0x' + ''.join(random.choices('0123456789abcdef', k=size*2))
                 else:
-                    value = None
+                    value = None # Non-supported types can be ignored or treated as needed
                 if value is not None:
                     function_inputs[input_param['name']] = value
-
-            if function_inputs:
-                buffer = serialize_inputs(function_inputs)
-            else:
-                buffer = generate_random_buffer()
-
-            mutated_buffer = mutate_input(buffer)
-
             inputs.append({
                 'stateMutability': item["stateMutability"],
                 'name': item['name'],
-                'inputs': function_inputs,
-                'mutated': mutated_buffer.hex()
+                'inputs': function_inputs
             })
-    save_testcases(inputs)
+
     return inputs
-
-# Salva em JSON
-def save_testcases(testcases):
-    os.makedirs('./output', exist_ok=True)
-    with open('./output/testcases.json', 'w') as f:
-        json.dump(testcases, f, indent=4)
-
-
