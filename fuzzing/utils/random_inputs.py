@@ -2,6 +2,7 @@ import random
 import struct
 import json
 import os
+from datetime import datetime
 
 # AFL Mutations
 def generate_random_buffer():
@@ -115,8 +116,9 @@ def generate_random_inputs(abi):
                     serialized = bytes.fromhex(original_value[2:])
                 else:
                     continue  # tipo não suportado
-
                 
+                
+
                 mutated = mutate_input(bytearray(serialized))
 
                 # Deserialize
@@ -144,8 +146,12 @@ def generate_random_inputs(abi):
             })
    
 
+
+    #Just to check different mutations
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    os.makedirs('output',exist_ok=True)
     # Salva em JSON
-    output_file = '/home/iaguito/fuzzing-scripts/fuzzing/output/mutated_inputs.json'
+    output_file = f'output/mutated_inputs_{timestamp}.json'
     with open(output_file, 'w') as f:
         json.dump(inputs, f, indent=4)
 

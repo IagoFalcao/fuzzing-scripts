@@ -1,0 +1,73 @@
+[
+    {
+        "stateMutability": "nonpayable",
+        "name": "complexFunction",
+        "inputs": {
+            "_num": 4248516639161594057700880826749756358407201361037188364663938585710834872258,
+            "_txt": "dvaKG)\u001fU\u001b\tx\u0005\u060d\u000b|&2\u01bf4.[\u0018\u0015\u001f\u0489\u0003\u001cDlHz6\u03fc\\$\u001en\\6du=fC^\fG\u001c\u01d5\u0010\u01d9lbk\u0015AI;dr)]v\u0393!$\\]s`s\u000f\u001bka$\u007fv2B3\u0015AD9\u000br2&\u0018QI\ua9fc\b\u000e\u0017<Mj!\u06321\u0668\u04b38\tc`F\r(.YG(ee0$q8\b{\u0002b)\u0015\u0018+\tMav\u001a>\f8>\u0011\\H>ZX~\u02b1hBI\rjd9\u0013#!\u0019e];mXG=\u00108p\r\u0004^LHy,j\u001fCA\\|T\u0656^\u001d\u0006\u001a\r/M\u0006\r|\u001a\u0002Ou\u0007X>\u02c7\r\bX7U+R\u001cmy2\u0007\ua2e3\u0018\u054f\u0012nj`\rIA\u0011@<\u0010jLW\"\u000e$Rc@T\u0002$\\a\u000f<6v\u001aW|\uf1750I\u0423\u0015\u001bP[E^2YZew'r\u001c\u6516Q%\f\t<\u000b`\\\u000b8\u1c72\\?nd\u0016o_\u0006jzM/$b{w\u0013NVQ\u001cE(LO\u0019.\u00151R<\u02a1j\"^1\u02bdifB\u0012\r[vYU.\u007f]z$*y`)\u0011\u000bD\u0010:ti(_c\u001d$v\u076aMD\u04d0z\u0002~OspwiSIr",
+            "_addr": "0x09a3901c42a82b9b4dfaae49ae9a55157c8fc27c",
+            "_boolVal": false,
+            "_byteData": "0x455dfe855c1ca285"
+        }
+    },
+    {
+        "stateMutability": "view",
+        "name": "data",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "flag",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "number",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setData",
+        "inputs": {
+            "_data": "0x3c2e142b8a00302e50ff7fb0a60cf1a81157e5f537e8"
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setFlag",
+        "inputs": {
+            "_flag": false
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setNumber",
+        "inputs": {
+            "_number": 46001906997087825249065900481148427489996693154738640693601585038013632517970
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setText",
+        "inputs": {
+            "_text": "zqEnEiNbFtChgVI"
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setUser",
+        "inputs": {
+            "_user": "0xa428b4264841dac74a0609c314f14f9562fd710a"
+        }
+    },
+    {
+        "stateMutability": "view",
+        "name": "text",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "user",
+        "inputs": {}
+    }
+]

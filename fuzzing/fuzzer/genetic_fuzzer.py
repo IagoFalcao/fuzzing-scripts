@@ -43,7 +43,7 @@ def genetic_fuzzer(w3, abi, contract_instance, sloads, calls, source_map, genera
 
                     # save_lowlevelcalls(result, f"gen{generation}_{func_name}.json")
                     
-                    if not result["failed"]:  # <-- Correct! access dict ["failed"]
+                    if not result["failed"]:  
                         for instruction in logs:
                             pc = detect_reentrancy(sloads, calls, instruction)
                             if pc:

@@ -1,0 +1,73 @@
+[
+    {
+        "stateMutability": "nonpayable",
+        "name": "complexFunction",
+        "inputs": {
+            "_num": 20381296824341295884212142264549898570540005298142060759835856013279230453561,
+            "_txt": "PMhsnIXKTGkZ\u00177\u0000h#\u15ef\u001d)Ee\u38bevq0dU\u0006Q4\u0689\u001c\bk\t& \u0238yE>\u040as+\u0002x}O\"Jh \u0005Q^^:Biq_\u0010\u000b{pI98n*\u0455\u0017pC{vGM\u0005BB\u0003v(-\u0007 wxzb>$\u0007\u0017h&\u0019D\u0013\u00f0'8\u00026_pgdu\u044alr\u0007/)\b^\n-Vhp_g/URo\u0005\u0006*e\u03c6\u0001Q$5'Ty/s\u0019\u0007\u000fvV\n\u00023H\u0018}\f\u0010$\b|V4QGp+\nI'/twL6\f;\fe#5\u0785C\u015e0F6\u0007\u0018W\u0010])\u001e1-ye(= xw\u0014\u001dy?\t\u0018F\u0017\u001d \u0011]P\nxZH\u0019l\u000e\u0005\u0019,?C2p<5Zj~ Nphg9\u0084Zp\u0314(\u000f(\u018bL[6a\u0004<f\u073c{:[z\u0013FrI!-\"0\u001cT\u001cDV\u00a4-\u0484{\u0003\u0010,\u001b\u0438\f6\u001c\u0000@^Yqx^~,2tg\u001ap+H\u0011\u001czl)Z\u0004\u001d\u0198)!vj\u0209pvI!Ng5\t\u0017;GKqC\u001bZRh'|8\u001e\u001bMEl^\u001e=\u001b|\u05405\u0005\u001e2dH\u007f$.2\u05ce+l<\u02d3'w\u0012\u0018v2tdg\u0012N?$V\t\u00133\t+\u0019f?Y\u0470c{%{B2\u0206-7,A\u0018B \u001ew\u000f\u0019x\u0015DD\u0013p\u000f7\u0004Q!+ B08vSWk^q\u0006\r\u07c4J\u000bB\u0018</\u00057~bY}UX;/I",
+            "_addr": "0x57599e8da8413441617fa5e12500000000000000",
+            "_boolVal": true,
+            "_byteData": "0x586127942b537938888a53fc41dc7155c220d7eeae4b35e78a53fc41dc7155c220d7ee"
+        }
+    },
+    {
+        "stateMutability": "view",
+        "name": "data",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "flag",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "number",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setData",
+        "inputs": {
+            "_data": "0xa3c4556bfad6fa"
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setFlag",
+        "inputs": {
+            "_flag": true
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setNumber",
+        "inputs": {
+            "_number": 24141522090582233732991351684972181116121322844988071437745634366576061394337
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setText",
+        "inputs": {
+            "_text": "~\u0004V/vDqbNCdODM"
+        }
+    },
+    {
+        "stateMutability": "nonpayable",
+        "name": "setUser",
+        "inputs": {
+            "_user": "0x0033c492c9b68bd95c4772c1c9118a11b69755c1"
+        }
+    },
+    {
+        "stateMutability": "view",
+        "name": "text",
+        "inputs": {}
+    },
+    {
+        "stateMutability": "view",
+        "name": "user",
+        "inputs": {}
+    }
+]
